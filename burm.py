@@ -1,83 +1,100 @@
-consonants = {
-    "က": "k",
-    "ခ": "kh",
-    "ဂ": "g",
-    "ဃ": "gh",
-    "င": "ng",
-    "စ": "s",
-    "ဆ": "ss",
-    "ဇ": "z",
-    "ဈ": "zz",
-    "ည": "ny",
-    "ဋ": "t",
-    "ဌ": "tt",
-    "ဍ": "d",
-    "ဎ": "dh",
-    "ဏ": "n",
-    "တ": "t",
-    "ထ": "tt",
-    "ဒ": "d",
-    "ဓ": "dh",
-    "န": "n",
-    "ပ": "p",
-    "ဖ": "pp",
-    "ဗ": "b",
-    "ဘ": "bh",
-    "မ": "m",
-    "ယ": "y",
-    "ရ": "y",
-    "လ": "l",
-    "ဝ": "w",
-    "သ": "th",
-    "ဟ": "h",
-    "ဠ": "l",
-    "အ": ""
-}
-semi_consonants = {
-    "ျ": "y",
-    "ြ": "y",
-    "ွ": "w",
-    "ှ": "h"
-}
-vowels = {
-    'ီ': "ee",
-    'ိ': "ee(short)",
-    'ေ': "ay",
-    'ဲ': "ehh",
-    'ူ': "oo",
-    'ု': "oo(short)",
-}
-punctuation = {
-    "။": ".",
-    "၊": ","
-}
-word_vowels = {
-    "ဣ": "ee(short)",
-    "ဤ": "ee",
-    "ဧ": "ay",
-    "ဩ": "aww",
-    "ဪ": "aw",
-    "ဥ": "oo(short)",
-    "ဦ": "oo"
-}
-
-def convertToEng(string):
+def convertToEng(string, debug=False):
+    consonants = {
+        "က": "k",
+        "ခ": "kh",
+        "ဂ": "g",
+        "ဃ": "gh",
+        "င": "ng",
+        'ဉ': "ng",
+        "စ": "s",
+        "ဆ": "ss",
+        "ဇ": "z",
+        "ဈ": "zz",
+        "ည": "ny",
+        "ဋ": "t",
+        "ဌ": "tt",
+        "ဍ": "d",
+        "ဎ": "dh",
+        "ဏ": "n",
+        "တ": "t",
+        "ထ": "tt",
+        "ဒ": "d",
+        "ဓ": "dh",
+        "န": "n",
+        "ပ": "p",
+        "ဖ": "pp",
+        "ဗ": "b",
+        "ဘ": "bh",
+        "မ": "m",
+        "ယ": "y",
+        "ရ": "y",
+        "လ": "l",
+        "ဝ": "w",
+        "သ": "th",
+        "ဟ": "h",
+        "ဠ": "l",
+        "အ": ""
+    }
+    semi_consonants = {
+        "ျ": "y",
+        "ြ": "y",
+        "ွ": "w",
+        "ှ": "h"
+    }
+    vowels = {
+        'ီ': "ee",
+        'ိ': "ee(short)",
+        'ေ': "ay",
+        'ဲ': "ehh",
+        'ူ': "oo",
+        'ု': "oo(short)",
+    }
+    punctuation = {
+        "။": ".",
+        "၊": ","
+    }
+    word_vowels = {
+        "ဣ": "ee(short)",
+        "ဤ": "ee",
+        "ဧ": "ay",
+        "ဩ": "aww",
+        "ဪ": "aw",
+        "ဥ": "oo(short)",
+        "ဦ": "oo"
+    }
+    numbers = {
+        "၀": "0",
+        "၁": "1",
+        "၂": "2",
+        "၃": "3",
+        "၄": "4",
+        "၅": "5",
+        "၆": "6",
+        "၇": "7",
+        "၈": "8",
+        "၉": "9"
+    }
     eng = []
+    dot = False
     for i in string:
         if i in consonants:
             if eng != []:
                 eng.append(" ")
+                dot = 0
             eng.append(consonants[i])
             eng.append("ah(short)")
         elif i in semi_consonants:
             if i == "ှ":
-                count = -2
-                while True:
-                    if eng[count] in semi_consonants.values():
-                        count-=1
-                    else:
-                        break
-                eng.insert(count, semi_consonants[i])
+                if eng[-2] == "y":
+                    eng[-2] = "sh"
+                else:
+                    count = -2
+                    while True:
+                        if eng[count] in semi_consonants.values():
+                            count-=1
+                        else:
+                            break
+                    eng.insert(count, semi_consonants[i])
             elif i == "ြ" or i == "ျ":
                 if eng[-2] == "k":
                     eng[-2] = "chy"
@@ -99,62 +116,225 @@ def convertToEng(string):
                 eng[-1] = eng[-1][:-7]
             else:
                 eng.append(eng[-1][-1])
-        elif i == "်":
+        elif i == "်" or i == "္":
             if eng[-1] == "aww":
                 eng[-1] = "aw"
             else:
-                match eng[-2]:
-                    case "k":
+                match eng[-2-dot]:
+                    case "k" | "g":
                         if eng[-4] == "aww":
                             del eng[-3:]
-                            eng[-1] = "au(strong)"
+                            eng[-1] = "auʔ"
                         elif eng[-4] == "oh":
                             del eng[-3:]
-                            eng[-1] = "ai(strong)"
+                            eng[-1] = "aiʔ"
                         else:
                             del eng[-3:]
-                            eng[-1] = "eh(strong)"
+                            eng[-1] = "ehʔ"
                     case "y":
                         del eng[-3:]
                         eng[-1] = "eh"
                     case "s":
                         del eng[-3:]
-                        eng[-1] = "ih(strong)"
+                        eng[-1] = "ihʔ"
                     case "ng":
+                        if dot:
+                            eng.pop()
                         if eng[-4] == "aww":
                             del eng[-3:]
-                            eng[-1] = "au"
+                            eng[-1] = "aung"
                         elif eng[-4] == "oh":
                             del eng[-3:]
-                            eng[-1] = "ai"
+                            eng[-1] = "aing"
                         else:
                             del eng[-3:]
-                            eng[-1] = "ih"
-                    case "t" | "p":
+                            eng[-1] = "in"
+                        if dot:
+                            eng.append("(short)")
+                    case "t" | "p" | "th" | "d" | "b":
                         if eng[-4] == "ee(short)":
                             del eng[-3:]
-                            eng[-1] = "ate(strong)"
+                            eng[-1] = "ayʔ"
                         elif eng[-4] == "oo(short)":
                             del eng[-3:]
-                            eng[-1] = "oah(strong)"
+                            eng[-1] = "oahʔ"
                         elif eng[-5] == "w":
                             del eng[-4:]
-                            eng[-1] = "ut(strong)"
+                            eng[-1] = "ooʔ"
                         else:
                             del eng[-3:]
-                            eng[-1] = "at(strong)"
-                        
+                            eng[-1] = "eahʔ"
+                    case "n" | "m":
+                        if dot:
+                            eng.pop()
+                        if eng[-4] == "ee(short)":
+                            del eng[-3:]
+                            eng[-1] = "ein"
+                        elif eng[-4] == "oo(short)":
+                            del eng[-3:]
+                            eng[-1] = "one"
+                        elif eng[-5] == "w":
+                            del eng[-4:]
+                            eng[-1] = "un"
+                        else:
+                            del eng[-3:]
+                            eng[-1] = "an"
+                        if dot:
+                            eng.append("(short)")
+                    case _:
+                        con = eng[-2]
+                        del eng[-3:]
+                        eng[-1] = "a"+con
         elif i == "့":
             eng.append("(short)")
+            dot = True
         elif i in punctuation:
             eng.append(punctuation[i])
         elif i in word_vowels:
             if eng != []:
                 eng.append(" ")
             eng.append(word_vowels[i])
+        elif i == 'ံ':
+            if eng[-1] == "ee(short)":
+                eng[-1] = "ain"
+            elif eng[-1] == "oo(short)":
+                eng[-1] = "one"
+            elif eng[-2] == "w":
+                del eng[-1:]
+                eng[-1] = "un"
+            else:
+                eng[-1] = "an"
+        elif i == "ဿ":
+            if eng[-1] == "ee(short)":
+                eng[-1] = "ayʔ"
+            elif eng[-1] == "oo(short)":
+                eng[-1] = "oahʔ"
+            elif eng[-2] == "w":
+                del eng[-2:]
+                eng[-1] = "ooʔ"
+            else:
+                eng[-1] = "eahʔ"
+            eng.append(" ")
+            eng.append("th")
+            eng.append("ah(short)")
+        elif i in numbers:
+            if not eng[-1].isdigit():
+                eng.append(" ")
+            eng.append(numbers[i])
         else:
+            eng.append(" ")
             eng.append(i)
-    # print(eng)
+            dot = 0
+        if debug:
+            print(eng)
     return "".join(eng)
-print(convertToEng(""))
-# print(list("ဪ"))
+print(convertToEng("""""", debug=True))
+# print(list("ပိဿာ"))
+def convertToJap(string):
+    consonants = {
+        "က": ["カ", "キ", "ク", "ケ", "コ"],
+        "ခ": ["ッカ", "ッキ", "ック", "ッケ", "ッコ"],
+        "ဂ": ["ガ", "ギ", "グ", "ゲ", "ゴ"],
+        "ဃ": ["ッガ", "ッギ", "ッグ", "ッゲ", "ッゴ"],
+        "င": ["ンガ", "ンギ", "ング", "ンゲ", "ンゴ"],
+        "စ": ["サ", "シ", "ス", "セ", "ソ"],
+        "ဆ": ["ッサ", "ッシ", "ッス", "ッセ", "ッソ"],
+        "ဇ": ["ザ", "ジ", "ズ", "ゼ", "ゾ"],
+        "ဈ": ["ッザ", "ッジ", "ッズ", "ッゼ", "ッゾ"],
+        "ည": ["ニャ", "ニィ", "ニュ", "ニェ", "ニョ"],
+        "ဋ": ["タ", "チ", "ツ", "テ", "ト"],
+        "ဌ": ["ッタ", "ッチ", "ッツ", "ッテ", "ット"],
+        "ဍ": ["ダ", "ヂ", "ヅ", "デ", "ド"],
+        "ဎ": ["ッダ", "ッヂ", "ッヅ", "ッデ", "ッド"],
+        "ဏ": ["ナ", "ニ", "ヌ", "ネ", "ノ"],
+        "တ": ["タ", "チ", "ツ", "テ", "ト"],
+        "ထ": ["ッタ", "ッチ", "ッツ", "ッテ", "ット"],
+        "ဒ": ["ダ", "ヂ", "ヅ", "デ", "ド"],
+        "ဓ": ["ッダ", "ッヂ", "ッヅ", "ッデ", "ッド"],
+        "န": ["ナ", "ニ", "ヌ", "ネ", "ノ"],
+        "ပ": ["パ", "ピ", "プ", "ペ", "ポ"],
+        "ဖ": ["ッパ", "ッピ", "ップ", "ッペ", "ッポ"],
+        "ဗ": ["バ", "ビ", "ブ", "ベ", "ボ"],
+        "ဘ": ["ッバ", "ッビ", "ッブ", "ッベ", "ッボ"],
+        "မ": ["マ", "ミ", "ム", "メ", "モ"],
+        "ယ": ["ヤ", "イ", "ユ", "イェ", "ヨ"],
+        "ရ": ["ヤ", "イ", "ユ", "イェ", "ヨ"],
+        "လ": ["ラ", "リ", "ル", "レ", "ロ"],
+        "ဝ": ["ワ", "イ", "ウ", "イェ", "ヲ"],
+        "သ": ["タ", "チ", "ツ", "テ", "ト"],
+        "ဟ": ["ハ", "イ", "フ", "イェ", "ホ"],
+        "ဠ": ["ラ", "リ", "ル", "レ", "ロ"],
+        "အ": ["ア", "イ", "ウ", "エ", "オ"]
+    }
+    ya = ["ャ", "ィ", "ュ", "ェ", "ョ"]
+    semi_consonants = {
+        "ျ": "y",
+        "ြ": "y",
+        "ွ": "w",
+        "ှ": "h"
+    }
+    # vowels = {
+    #     'ီ': "ee",
+    #     'ိ': "ee(short)",
+    #     'ေ': "ay",
+    #     'ဲ': "ehh",
+    #     'ူ': "oo",
+    #     'ု': "oo(short)",
+    # }
+    punctuation = {
+        "။": "。",
+        "၊": "、"
+    }
+    # word_vowels = {
+    #     "ဣ": "ee(short)",
+    #     "ဤ": "ee",
+    #     "ဧ": "ay",
+    #     "ဩ": "aww",
+    #     "ဪ": "aw",
+    #     "ဥ": "oo(short)",
+    #     "ဦ": "oo"
+    # }
+    class Word:
+        def __init__(self, consonant, vowel, semi_consonant):
+            self.consonant = consonant
+            self.vowel = vowel
+            self.semi_consonant = semi_consonant
+        def __str__(self):
+            if self.semi_consonant != []:
+                word = [consonants, self.consonant, self.vowel]
+                for i in self.semi_consonant:
+                    match i:
+                        case "y":
+                            word.insert(2, 1)
+                            word.insert(3, ya)
+                        case "w":
+                            word[-1] = 2
+                            word += [consonants, 33, self.vowel]
+                        case "h":
+                            word = [consonants, 31, 0] + word
+                words = []
+                for i in word:
+                    if type(i) == list:
+                        words.append(i)
+                    else:
+                        words[-1] = words[-1][i]
+                return "".join(words)
+                        
+            else:
+                return consonants[self.consonant][self.vowel]
+    jap = []
+    for i in string:
+        if i in consonants:
+            jap.append(Word(i, 0, []))
+        elif i in semi_consonants:
+            index = -1
+            while type(jap[index]) != Word:
+                index -= 1
+            jap[index].semi_consonant.append(semi_consonants[i])
+        elif i in punctuation:
+            jap.append(punctuation[i])
+    word = ""
+    for i in jap:
+        word += str(i)
+    return word
+# print(convertToJap("ပျ"))
