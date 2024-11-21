@@ -183,91 +183,99 @@ def convertToEng(string, debug=False):
                         if dot:
                             eng.append("(short)")
                     case "ny":
-                        word = ""
-                        phrase = ""
-                        sentence = ""
-                        ee = 0
-                        eh = 0
-
-                        
-                        word_start, word_stop = index-2, index+1
-                        while True:
-                            if string[word_start] in consonants or string[word_start] == "ဧ":
-                                break
-                            word_start -= 1
-                        if len(string) >= index+2:
-                            if string[index+1] == "း":
-                                word_stop += 1
-                        word = "(" + string[word_start:word_stop] + ")"
-                        if debug:
-                            print(word)
-                        prediction = classify(word)
-                        if debug:
-                            print(prediction["class_name"])
-                        if prediction["class_name"] == "ee":
-                            ee += 1
-                        elif prediction["class_name"] == "eh":
-                            eh += 1
-
-                        start, stop = index, index
-                        brake = [" ", "။", "၊"]
-                        while True:
-                            if start == 0:
-                                break
-                            if string[start] in brake:
-                                break
-                            start -= 1
-                        while True:
-                            if stop == len(string)-1:
-                                break
-                            if string[stop] in brake:
-                                break
-                            stop += 1
-                        phrase = string[start:stop+1]
-                        phrase = phrase[:word_start-start] + "(" + phrase[word_start:word_stop] + ")" + phrase[word_stop-start:]
-                        if debug:
-                            print(phrase)
-                        prediction = classify(phrase)
-                        if debug:
-                            print(prediction["class_name"])
-                        if prediction["class_name"] == "ee":
-                            ee += 1
-                        elif prediction["class_name"] == "eh":
-                            eh += 1
-
-                        start, stop = index, index
-                        brake = ["။", "၊"]
-                        while True:
-                            if start == 0:
-                                break
-                            if string[start] in brake:
-                                break
-                            start -= 1
-                        while True:
-                            if stop == len(string)-1:
-                                break
-                            if string[stop] in brake:
-                                break
-                            stop += 1
-                        sentence = string[start:stop+1]
-                        sentence = sentence[:word_start-start] + "(" + sentence[word_start:word_stop] + ")" + sentence[word_stop-start:]
-                        if debug:
-                            print(sentence)
-                        prediction = classify(sentence)
-                        if debug:
-                            print(prediction["class_name"])
-                        if prediction["class_name"] == "ee":
-                            ee += 1
-                        elif prediction["class_name"] == "eh":
-                            eh += 1
-
-                        result = ""
-                        if eh > ee:
-                            result = "eh"
+                        if eng[-5] == "sh":
+                            del eng[-3:]
+                            eng[-1] = "ay"
+                        elif eng[-5] == "m":
+                            del eng[-3:]
+                            eng[-1] = "y"
+                            eng.append("ee")
                         else:
-                            result = "ee"
-                        del eng[-3:]
-                        eng[-1] = result
+                            word = ""
+                            phrase = ""
+                            sentence = ""
+                            ee = 0
+                            eh = 0
+
+                            
+                            word_start, word_stop = index-2, index+1
+                            while True:
+                                if string[word_start] in consonants or string[word_start] == "ဧ":
+                                    break
+                                word_start -= 1
+                            if len(string) >= index+2:
+                                if string[index+1] == "း":
+                                    word_stop += 1
+                            word = "(" + string[word_start:word_stop] + ")"
+                            if debug:
+                                print(word)
+                            prediction = classify(word)
+                            if debug:
+                                print(prediction["class_name"])
+                            if prediction["class_name"] == "ee":
+                                ee += 1
+                            elif prediction["class_name"] == "eh":
+                                eh += 1
+
+                            start, stop = index, index
+                            brake = [" ", "။", "၊"]
+                            while True:
+                                if start == 0:
+                                    break
+                                if string[start] in brake:
+                                    break
+                                start -= 1
+                            while True:
+                                if stop == len(string)-1:
+                                    break
+                                if string[stop] in brake:
+                                    break
+                                stop += 1
+                            phrase = string[start:stop+1]
+                            phrase = phrase[:word_start-start] + "(" + phrase[word_start:word_stop] + ")" + phrase[word_stop-start:]
+                            if debug:
+                                print(phrase)
+                            prediction = classify(phrase)
+                            if debug:
+                                print(prediction["class_name"])
+                            if prediction["class_name"] == "ee":
+                                ee += 1
+                            elif prediction["class_name"] == "eh":
+                                eh += 1
+
+                            start, stop = index, index
+                            brake = ["။", "၊"]
+                            while True:
+                                if start == 0:
+                                    break
+                                if string[start] in brake:
+                                    break
+                                start -= 1
+                            while True:
+                                if stop == len(string)-1:
+                                    break
+                                if string[stop] in brake:
+                                    break
+                                stop += 1
+                            sentence = string[start:stop+1]
+                            sentence = sentence[:word_start-start] + "(" + sentence[word_start:word_stop] + ")" + sentence[word_stop-start:]
+                            if debug:
+                                print(sentence)
+                            prediction = classify(sentence)
+                            if debug:
+                                print(prediction["class_name"])
+                            if prediction["class_name"] == "ee":
+                                ee += 1
+                            elif prediction["class_name"] == "eh":
+                                eh += 1
+
+                            result = ""
+                            if eh > ee:
+                                result = "eh"
+                            else:
+                                result = "ee"
+                            del eng[-3:]
+                            eng[-1] = result
                     case _:
                         con = eng[-2]
                         del eng[-3:]
@@ -316,6 +324,7 @@ def convertToEng(string, debug=False):
             print(eng)
     return "".join(eng)
 print(convertToEng("""
+ချည်
 """)) # insert text here
 
 # print(list("ထည့်"))
