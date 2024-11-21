@@ -316,8 +316,10 @@ def convertToEng(string, debug=False):
             print(eng)
     return "".join(eng)
 print(convertToEng("""
-""", debug=True))
+"""))
 # print(list("ထည့်"))
+
+
 def convertToJap(string):
     consonants = {
         "က": ["カ", "キ", "ク", "ケ", "コ"],
