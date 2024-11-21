@@ -1,3 +1,4 @@
+from nyathetdetector import classify
 def convertToEng(string, debug=False):
     consonants = {
         "က": "k",
@@ -46,8 +47,8 @@ def convertToEng(string, debug=False):
         'ိ': "ee(short)",
         'ေ': "ay",
         'ဲ': "ehh",
-        'ူ': "oo",
-        'ု': "oo(short)",
+        'ူ': "uu",
+        'ု': "uu(short)",
     }
     punctuation = {
         "။": ".",
@@ -59,8 +60,8 @@ def convertToEng(string, debug=False):
         "ဧ": "ay",
         "ဩ": "aww",
         "ဪ": "aw",
-        "ဥ": "oo(short)",
-        "ဦ": "oo"
+        "ဥ": "uu(short)",
+        "ဦ": "uu"
     }
     numbers = {
         "၀": "0",
@@ -76,7 +77,7 @@ def convertToEng(string, debug=False):
     }
     eng = []
     dot = False
-    for i in string:
+    for index, i in enumerate(string):
         if i in consonants:
             if eng != []:
                 eng.append(" ")
@@ -155,12 +156,12 @@ def convertToEng(string, debug=False):
                         if eng[-4] == "ee(short)":
                             del eng[-3:]
                             eng[-1] = "ayʔ"
-                        elif eng[-4] == "oo(short)":
+                        elif eng[-4] == "uu(short)":
                             del eng[-3:]
                             eng[-1] = "oahʔ"
                         elif eng[-5] == "w":
                             del eng[-4:]
-                            eng[-1] = "ooʔ"
+                            eng[-1] = "uuʔ"
                         else:
                             del eng[-3:]
                             eng[-1] = "eahʔ"
@@ -170,7 +171,7 @@ def convertToEng(string, debug=False):
                         if eng[-4] == "ee(short)":
                             del eng[-3:]
                             eng[-1] = "ein"
-                        elif eng[-4] == "oo(short)":
+                        elif eng[-4] == "uu(short)":
                             del eng[-3:]
                             eng[-1] = "one"
                         elif eng[-5] == "w":
@@ -181,6 +182,92 @@ def convertToEng(string, debug=False):
                             eng[-1] = "an"
                         if dot:
                             eng.append("(short)")
+                    case "ny":
+                        word = ""
+                        phrase = ""
+                        sentence = ""
+                        ee = 0
+                        eh = 0
+
+                        
+                        word_start, word_stop = index-2, index+1
+                        while True:
+                            if string[word_start] in consonants or string[word_start] == "ဧ":
+                                break
+                            word_start -= 1
+                        if len(string) >= index+2:
+                            if string[index+1] == "း":
+                                word_stop += 1
+                        word = "(" + string[word_start:word_stop] + ")"
+                        if debug:
+                            print(word)
+                        prediction = classify(word)
+                        if debug:
+                            print(prediction["class_name"])
+                        if prediction["class_name"] == "ee":
+                            ee += 1
+                        elif prediction["class_name"] == "eh":
+                            eh += 1
+
+                        start, stop = index, index
+                        brake = [" ", "။", "၊"]
+                        while True:
+                            if start == 0:
+                                break
+                            if string[start] in brake:
+                                break
+                            start -= 1
+                        while True:
+                            if stop == len(string)-1:
+                                break
+                            if string[stop] in brake:
+                                break
+                            stop += 1
+                        phrase = string[start:stop+1]
+                        phrase = phrase[:word_start-start] + "(" + phrase[word_start:word_stop] + ")" + phrase[word_stop-start:]
+                        if debug:
+                            print(phrase)
+                        prediction = classify(phrase)
+                        if debug:
+                            print(prediction["class_name"])
+                        if prediction["class_name"] == "ee":
+                            ee += 1
+                        elif prediction["class_name"] == "eh":
+                            eh += 1
+
+                        start, stop = index, index
+                        brake = ["။", "၊"]
+                        while True:
+                            if start == 0:
+                                break
+                            if string[start] in brake:
+                                break
+                            start -= 1
+                        while True:
+                            if stop == len(string)-1:
+                                break
+                            if string[stop] in brake:
+                                break
+                            stop += 1
+                        sentence = string[start:stop+1]
+                        sentence = sentence[:word_start-start] + "(" + sentence[word_start:word_stop] + ")" + sentence[word_stop-start:]
+                        if debug:
+                            print(sentence)
+                        prediction = classify(sentence)
+                        if debug:
+                            print(prediction["class_name"])
+                        if prediction["class_name"] == "ee":
+                            ee += 1
+                        elif prediction["class_name"] == "eh":
+                            eh += 1
+
+                        result = ""
+                        if eh > ee:
+                            result = "eh"
+                        else:
+                            result = "ee"
+                        del eng[-3:]
+                        eng[-1] = result
                     case _:
                         con = eng[-2]
                         del eng[-3:]
@@ -197,7 +284,7 @@ def convertToEng(string, debug=False):
         elif i == 'ံ':
             if eng[-1] == "ee(short)":
                 eng[-1] = "ain"
-            elif eng[-1] == "oo(short)":
+            elif eng[-1] == "uu(short)":
                 eng[-1] = "one"
             elif eng[-2] == "w":
                 del eng[-1:]
@@ -207,11 +294,11 @@ def convertToEng(string, debug=False):
         elif i == "ဿ":
             if eng[-1] == "ee(short)":
                 eng[-1] = "ayʔ"
-            elif eng[-1] == "oo(short)":
+            elif eng[-1] == "uu(short)":
                 eng[-1] = "oahʔ"
             elif eng[-2] == "w":
                 del eng[-2:]
-                eng[-1] = "ooʔ"
+                eng[-1] = "uuʔ"
             else:
                 eng[-1] = "eahʔ"
             eng.append(" ")
@@ -228,8 +315,9 @@ def convertToEng(string, debug=False):
         if debug:
             print(eng)
     return "".join(eng)
-print(convertToEng("""""", debug=True))
-# print(list("ပိဿာ"))
+print(convertToEng("""
+""", debug=True))
+# print(list("ထည့်"))
 def convertToJap(string):
     consonants = {
         "က": ["カ", "キ", "ク", "ケ", "コ"],
@@ -278,8 +366,8 @@ def convertToJap(string):
     #     'ိ': "ee(short)",
     #     'ေ': "ay",
     #     'ဲ': "ehh",
-    #     'ူ': "oo",
-    #     'ု': "oo(short)",
+    #     'ူ': "uu",
+    #     'ု': "uu(short)",
     # }
     punctuation = {
         "။": "。",
@@ -291,8 +379,8 @@ def convertToJap(string):
     #     "ဧ": "ay",
     #     "ဩ": "aww",
     #     "ဪ": "aw",
-    #     "ဥ": "oo(short)",
-    #     "ဦ": "oo"
+    #     "ဥ": "uu(short)",
+    #     "ဦ": "uu"
     # }
     class Word:
         def __init__(self, consonant, vowel, semi_consonant):
