@@ -316,7 +316,8 @@ def convertToEng(string, debug=False):
             print(eng)
     return "".join(eng)
 print(convertToEng("""
-"""))
+""")) # insert text here
+
 # print(list("ထည့်"))
 
 

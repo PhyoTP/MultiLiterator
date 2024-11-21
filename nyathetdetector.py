@@ -32,7 +32,6 @@ def classify(text):
 # This function will store your text in one of the training
 # buckets in your machine learning project
 def storeTraining(text, label):
-    key = "ce2c1f20-a7d7-11ef-b4bc-3f9f6b744595f23dbb4e-3c80-4e33-839b-1f4f784bd4f5"
     url = "https://machinelearningforkids.co.uk/api/scratch/"+ key + "/train"
 
     response = requests.post(url, json={ "data" : text, "label" : label })
