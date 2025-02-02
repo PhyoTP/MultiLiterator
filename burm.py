@@ -324,10 +324,8 @@ def convertToEng(string, debug=False):
             print(eng)
     return "".join(eng)
 print(convertToEng("""
-ချည်
+တိုးတိုးနဲ့ စိုးမိုးက နေ့တိုင်း ဘာတွေအတူတူလုပ်သလဲ။
 """)) # insert text here
-
-# print(list("ထည့်"))
 
 
 def convertToJap(string):
