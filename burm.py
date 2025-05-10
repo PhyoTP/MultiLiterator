@@ -277,9 +277,10 @@ def convertToEng(string, debug=False):
                             del eng[-3:]
                             eng[-1] = result
                     case _:
-                        con = eng[-2]
-                        del eng[-3:]
-                        eng[-1] = "a"+con
+                        if len(eng) >= 3:
+                            con = eng[-2]
+                            del eng[-3:]
+                            eng[-1] = "a"+con
         elif i == "့":
             eng.append("(short)")
             dot = True
@@ -323,9 +324,7 @@ def convertToEng(string, debug=False):
         if debug:
             print(eng)
     return "".join(eng)
-print(convertToEng("""
-တိုးတိုးနဲ့ စိုးမိုးက နေ့တိုင်း ဘာတွေအတူတူလုပ်သလဲ။
-""")) # insert text here
+print(convertToEng("အင်္ဂါ")) # insert text here
 
 
 def convertToJap(string):
